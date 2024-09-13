@@ -1,0 +1,89 @@
+public class ImobiliariaController {
+    
+    //Criar variáveis
+    public integer quartos {get; set;}
+    public integer banheiro {get; set;}
+    public integer sala {get; set;}
+    public integer cozinha {get; set;}
+    public integer copa {get; set;}
+    public integer suite {get; set;}
+    public integer vagas {get; set;}
+    public integer valor {get; set;}
+    public String tipoImovel {get; set;}
+    
+    // Método picklist
+    public List<SelectOption> getMinhasOpcoes(){
+        
+        // Mapear o campo de lista de seleção/picklist que desejo listar        
+        Schema.DescribeFieldResult describeResult = Imoveis__c.TipoImovel__c.getDescribe();
+        
+        // Listar as opções válidas dentro do meu campo
+        List<Schema.PicklistEntry> entries = describeResult.getPickListValues();
+        
+        // Criar variável de retorno do tipo de lista para o objeto SelectOption
+        List<SelectOption> optionsToReturn = new List<SelectOption>();
+        
+        // Adicionar as opções do campo listadas
+        for(Schema.PicklistEntry pEntry : entries){
+            
+            // Se opção esta ativa
+            // Ou pode aplicar o filtro que quiser, caso não queira mostrar todas as opções
+            if(pEntry.isActive()){
+                
+                // Adicionar o nome e valor na variável retorno
+                optionsToReturn.add(new SelectOption(pEntry.getValue(), pEntry.getLabel()));
+            }
+        }
+        
+        // Retorna a lista de selectOption que criamos na variável de retorno
+        return optionsToReturn;
+        
+        
+        
+    }
+    
+    
+    
+    // Método para salvar informações
+    public void salvarImoveis(){
+        Imoveis__c instanciaImoveis = new Imoveis__c();
+        instanciaImoveis.Quartos__c = quartos;
+        instanciaImoveis.Banheiro__c = banheiro;
+        instanciaImoveis.Sala__c = sala;
+        instanciaImoveis.Cozinha__c = cozinha;
+        instanciaImoveis.Copa__c = copa;
+        instanciaImoveis.Suite__c = suite;
+        instanciaImoveis.Garagem__c = vagas;
+        instanciaImoveis.Valor__c = valor;
+        instanciaImoveis.TipoImovel__c = tipoImovel;
+                           
+        try{
+            if(instanciaImoveis.TipoImovel__c !='--Nenhum--' && instanciaImoveis.TipoImovel__c != null){
+                ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.CONFIRM, 'Imóvel cadastrado com sucesso!'));
+                
+                // Inserir dados da variável para Salesforce
+                insert instanciaImoveis;
+                
+                // limpar as caixar texto depois de enviar os dados 
+                quartos = null; 
+                banheiro = null;
+                sala = null;
+                cozinha = null;
+                copa = null;
+                suite = null;
+                vagas = null; 
+                vagas = null;
+                valor = null;
+                tipoImovel = null;
+                 
+            }else{
+                ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'O campo tipo de Imóvel deverá ser preenchido!'));   
+            }
+            
+        }catch(DmlException e){
+            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR, 'Por favor verifique todos os campos antes de salvar.'));            
+        }
+    }
+    
+
+}
